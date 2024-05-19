@@ -1,101 +1,79 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import io from "socket.io-client";
 import { useParams } from "react-router-dom";
 import hljs from "highlight.js";
-import "highlight.js/styles/default.css"; // Import the default style
-import socket from "./socket"; // Import the singleton socket instance
+import "highlight.js/styles/default.css";
+import "../styles/styles.css"; // Import the CSS file
+
+const socket = io.connect("http://localhost:4000");
 
 const CodeBlock = () => {
   const { id } = useParams();
-  const [codeBlock, setCodeBlock] = useState({ title: "", code: "" });
-  const [role, setRole] = useState("");
-  const codeRef = useRef(null); // Ref to the code block for highlighting
+  const [code, setCode] = useState("");
+  const [isMentor, setIsMentor] = useState(false);
+  const [mentorAssigned, setMentorAssigned] = useState(false);
 
-  const fetchCodeBlock = useCallback(() => {
+  useEffect(() => {
     fetch(`/code-blocks/${id}`)
       .then((response) => response.json())
       .then((data) => {
-        setCodeBlock(data);
-        console.log(`Fetched code block ${id}:`, data);
-      })
-      .catch((err) => {
-        console.error(`Error fetching code block ${id}:`, err);
+        setCode(data.code);
+        console.log(`Fetched code block ${id}:`, data.code);
+        // Check mentor status
+        socket.emit("check mentor");
       });
-  }, [id]);
-
-  useEffect(() => {
-    // Notify the server that the user has entered the lobby
-    socket.emit("enter lobby");
-    console.log("Emitted enter lobby event");
-
-    // Listen for role assignment
-    socket.on("role assigned", (assignedRole) => {
-      console.log(`Role assigned for code block ${id}:`, assignedRole);
-      setRole(assignedRole);
-    });
 
     // Listen for code updates
     socket.on("code update", (data) => {
-      if (data.id === parseInt(id)) {
-        console.log(
-          `Received code update for code block ${data.id}:`,
-          data.code
-        );
-        setCodeBlock((prev) => ({ ...prev, code: data.code }));
-      }
+      console.log(`Code update for code block ${data.id}:`, data.code);
+      setCode(data.code);
     });
 
-    // Listen for role updates
-    socket.on("role updated", ({ mentor, student }) => {
-      console.log("Role updated:", { mentor, student });
-      if (mentor === socket.id) {
-        setRole("mentor");
-      } else if (student === socket.id) {
-        setRole("student");
-      } else {
-        setRole("");
-      }
+    // Listen for mentor status
+    socket.on("mentor status", (status) => {
+      console.log(`Received mentor status for code block ${id}:`, status);
+      setIsMentor(status);
+      setMentorAssigned(true);
+      console.log(`isMentor: ${status}, mentorAssigned: true`);
     });
 
-    // Cleanup socket listeners on unmount
+    // Cleanup on component unmount
     return () => {
-      socket.off("role assigned");
       socket.off("code update");
-      socket.off("role updated");
+      socket.off("mentor status");
     };
-  }, [id]);
-
-  useEffect(() => {
-    if (role) {
-      fetchCodeBlock();
-    }
-  }, [role, fetchCodeBlock]);
-
-  useEffect(() => {
-    if (codeRef.current && role === "mentor") {
-      hljs.highlightBlock(codeRef.current); // Highlight the code block
-    }
-  }, [codeBlock.code, role]);
+  }, [id]); // Re-run effect when code block ID changes
 
   const handleCodeChange = (e) => {
-    if (role === "student") {
+    if (!isMentor) {
       const updatedCode = e.target.value;
-      setCodeBlock((prev) => ({ ...prev, code: updatedCode }));
+      setCode(updatedCode);
       console.log(`Student updating code block ${id}:`, updatedCode);
-      socket.emit("code change", { id: parseInt(id), code: updatedCode });
+      socket.emit("code change", { id, code: updatedCode });
     }
   };
 
+  useEffect(() => {
+    hljs.highlightAll();
+  }, [code]);
+
+  // Additional logging for debugging
+  console.log(`Rendering CodeBlock for id: ${id}`);
+  console.log(`isMentor: ${isMentor}, mentorAssigned: ${mentorAssigned}`);
+
   return (
-    <div>
-      <h1>{codeBlock.title}</h1>
-      {role === "mentor" ? (
-        <pre>
-          <code className="javascript" ref={codeRef}>
-            {codeBlock.code}
-          </code>
-        </pre>
+    <div className="container">
+      <h1>Code Block</h1>
+      {mentorAssigned ? (
+        isMentor ? (
+          <pre>
+            <code className="javascript">{code}</code>
+          </pre>
+        ) : (
+          <textarea value={code} onChange={handleCodeChange} />
+        )
       ) : (
-        <textarea value={codeBlock.code} onChange={handleCodeChange} />
+        <p>Loading...</p>
       )}
     </div>
   );
