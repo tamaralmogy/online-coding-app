@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import socket from "./socket"; // Import the singleton socket instance
 
 const Lobby = () => {
   const navigate = useNavigate();
@@ -9,21 +8,7 @@ const Lobby = () => {
   useEffect(() => {
     fetch("/code-blocks")
       .then((response) => response.json())
-      .then((data) => setCodeBlocks(data))
-      .catch((err) => console.error("Error fetching code blocks:", err));
-
-    // Notify server of entering lobby
-    socket.emit("enter lobby");
-
-    // Listen for role assignment
-    socket.on("role assigned", (role) => {
-      console.log("Assigned role:", role);
-    });
-
-    // Cleanup socket listeners on unmount
-    return () => {
-      socket.off("role assigned");
-    };
+      .then((data) => setCodeBlocks(data));
   }, []);
 
   const handleClick = (id) => {

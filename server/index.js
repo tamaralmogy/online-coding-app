@@ -14,7 +14,6 @@ const io = socketIo(server, {
   },
 });
 
-// Manually defined code blocks
 const codeBlocks = [
   {
     id: 1,
@@ -38,21 +37,26 @@ const codeBlocks = [
   },
 ];
 
-let mentorAssigned = null; // Track mentor assignment globally
-let studentAssigned = null; // Track student assignment globally
+let mentorAssigned = {};
 
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
+  console.log(`${req.method} ${req.url}`);
+  res.on("finish", () => {
+    console.log(`${res.statusCode} ${res.statusMessage}`);
+  });
   next();
 });
 
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/code-blocks", (req, res) => {
+  console.log("GET /code-blocks");
   res.json(codeBlocks);
 });
 
 app.get("/code-blocks/:id", (req, res) => {
+  console.log(`GET /code-blocks/${req.params.id}`);
   const codeBlock = codeBlocks.find(
     (block) => block.id === parseInt(req.params.id)
   );
@@ -64,45 +68,37 @@ app.get("/code-blocks/:id", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  // Assign mentor and student when entering the lobby
-  socket.on("enter lobby", () => {
-    if (!mentorAssigned) {
-      mentorAssigned = socket.id; // Assign the mentor by socket id
-      socket.emit("role assigned", "mentor");
-      console.log(`Mentor assigned: ${socket.id}`);
-    } else if (!studentAssigned && mentorAssigned !== socket.id) {
-      studentAssigned = socket.id; // Assign the student by socket id
-      socket.emit("role assigned", "student");
-      console.log(`Student assigned: ${socket.id}`);
+  console.log("New client connected");
+  console.log("Current mentor assignments:", mentorAssigned);
+
+  socket.on("check mentor", (id) => {
+    console.log(`Client checking mentor status for code block ${id}`);
+    if (!mentorAssigned[id]) {
+      mentorAssigned[id] = socket.id; // Assign the mentor by socket id
+      socket.emit("mentor status", true);
+      console.log(`Mentor assigned for code block ${id}:`, socket.id);
+    } else {
+      socket.emit("mentor status", false);
     }
+    console.log("Updated mentor assignments:", mentorAssigned);
   });
 
   socket.on("code change", (data) => {
+    console.log(`Code change for code block ${data.id}:`, data.code);
     io.emit("code update", data);
   });
 
   socket.on("disconnect", () => {
-    if (mentorAssigned === socket.id) {
-      console.log("Mentor disconnected");
-      mentorAssigned = null; // Reset mentor assignment
-      if (studentAssigned) {
-        // Promote student to mentor
-        mentorAssigned = studentAssigned;
-        studentAssigned = null;
-        io.to(mentorAssigned).emit("role assigned", "mentor");
+    console.log("Client disconnected");
+    // Check if the disconnected client was the mentor
+    for (const key in mentorAssigned) {
+      if (mentorAssigned[key] === socket.id) {
+        console.log(`Mentor disconnected from code block ${key}`);
+        delete mentorAssigned[key]; // Remove mentor assignment
+        break;
       }
-    } else if (studentAssigned === socket.id) {
-      console.log("Student disconnected");
-      studentAssigned = null; // Reset student assignment
     }
-    console.log("Current mentor assignment:", mentorAssigned);
-    console.log("Current student assignment:", studentAssigned);
-
-    // Notify remaining clients of updated roles
-    io.emit("role updated", {
-      mentor: mentorAssigned,
-      student: studentAssigned,
-    });
+    console.log("Updated mentor assignments after disconnect:", mentorAssigned);
   });
 });
 
