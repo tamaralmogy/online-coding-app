@@ -37,12 +37,8 @@ const codeBlocks = [
   },
 ];
 
-<<<<<<< HEAD
 // Variable to store the global mentor socket ID
 let globalMentorId = null;
-=======
-let mentorAssigned = {};
->>>>>>> 8bdca2de43b6dd217eb07ce1a6ba0e47172d5744
 
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
@@ -73,7 +69,6 @@ app.get("/code-blocks/:id", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-<<<<<<< HEAD
   console.log("New client connected:", socket.id);
 
   socket.on("check mentor", () => {
@@ -86,48 +81,20 @@ io.on("connection", (socket) => {
       socket.emit("mentor status", false);
     }
     console.log("Current global mentor:", globalMentorId);
-=======
-  console.log("New client connected");
-  console.log("Current mentor assignments:", mentorAssigned);
-
-  socket.on("check mentor", (id) => {
-    console.log(`Client checking mentor status for code block ${id}`);
-    if (!mentorAssigned[id]) {
-      mentorAssigned[id] = socket.id; // Assign the mentor by socket id
-      socket.emit("mentor status", true);
-      console.log(`Mentor assigned for code block ${id}:`, socket.id);
-    } else {
-      socket.emit("mentor status", false);
-    }
-    console.log("Updated mentor assignments:", mentorAssigned);
->>>>>>> 8bdca2de43b6dd217eb07ce1a6ba0e47172d5744
   });
 
   socket.on("code change", (data) => {
     console.log(`Code change for code block ${data.id}:`, data.code);
-    io.emit("code update", data);
+    io.emit("code update", data); // Emit the code update event
   });
 
   socket.on("disconnect", () => {
-<<<<<<< HEAD
     console.log("Client disconnected:", socket.id);
     if (globalMentorId === socket.id) {
       console.log(`Mentor disconnected:`, socket.id);
       globalMentorId = null; // Remove global mentor assignment
     }
     console.log("Current global mentor after disconnect:", globalMentorId);
-=======
-    console.log("Client disconnected");
-    // Check if the disconnected client was the mentor
-    for (const key in mentorAssigned) {
-      if (mentorAssigned[key] === socket.id) {
-        console.log(`Mentor disconnected from code block ${key}`);
-        delete mentorAssigned[key]; // Remove mentor assignment
-        break;
-      }
-    }
-    console.log("Updated mentor assignments after disconnect:", mentorAssigned);
->>>>>>> 8bdca2de43b6dd217eb07ce1a6ba0e47172d5744
   });
 });
 
