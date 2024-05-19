@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import "../styles/styles.css"; // Import the CSS file
+=======
+>>>>>>> 8bdca2de43b6dd217eb07ce1a6ba0e47172d5744
 
 const Lobby = () => {
   const navigate = useNavigate();
@@ -10,6 +13,7 @@ const Lobby = () => {
 
   useEffect(() => {
     fetch("/code-blocks")
+<<<<<<< HEAD
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -24,6 +28,10 @@ const Lobby = () => {
         setError(error);
         setLoading(false);
       });
+=======
+      .then((response) => response.json())
+      .then((data) => setCodeBlocks(data));
+>>>>>>> 8bdca2de43b6dd217eb07ce1a6ba0e47172d5744
   }, []);
 
   const handleClick = (id) => {
