@@ -35,10 +35,17 @@ Make sure you have the following software installed on your machine:
    ```bash
    git clone https://github.com/tamaralmogy/online-coding-app.git
    cd online-coding-app
-  npm install
-  npm start
+   npm install
+   npm start
   ```
-
+### Project Structure
+- `public/`: Contains static files and the `index.html`.
+- `src/`: Contains the React components and application logic.
+  - `components/`: Contains React components like `CodeBlock` and `Lobby`.
+  - `styles/`: Contains CSS files for styling.
+  - `index.js`: Entry point for the React application.
+- `server/`: Contains the server-side code.
+  - `index.js`: Main server file that sets up the Express server and WebSocket connections.
 
    
    
