@@ -2,7 +2,6 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const path = require("path");
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -37,8 +36,13 @@ const codeBlocks = [
   },
 ];
 
-// Variable to store the global mentor socket ID
-let globalMentorId = null;
+// Dynamically generate the solution for each code block
+codeBlocks.forEach((block) => {
+  block.solution = `${block.code} thank you ChatGPT!`;
+});
+
+let mentorId = null; // Global mentor ID
+let students = new Set(); // Set to store student IDs
 
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
@@ -69,32 +73,65 @@ app.get("/code-blocks/:id", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
+  console.log("New client connected");
+  console.log("Current mentor ID:", mentorId);
 
-  socket.on("check mentor", () => {
-    console.log(`Client checking mentor status`);
-    if (!globalMentorId) {
-      globalMentorId = socket.id; // Assign the client as the global mentor
-      socket.emit("mentor status", true);
-      console.log(`Mentor assigned:`, socket.id);
-    } else {
-      socket.emit("mentor status", false);
-    }
-    console.log("Current global mentor:", globalMentorId);
+  if (!mentorId) {
+    mentorId = socket.id;
+    socket.emit("mentor status", true);
+    console.log(`Mentor assigned: ${socket.id}`);
+  } else {
+    socket.emit("mentor status", false);
+    students.add(socket.id); // Add to students set
+  }
+
+  socket.on("check mentor", (id) => {
+    console.log(`Client checking mentor status for code block ${id}`);
+    socket.emit("mentor status", mentorId === socket.id);
   });
 
   socket.on("code change", (data) => {
     console.log(`Code change for code block ${data.id}:`, data.code);
-    io.emit("code update", data); // Emit the code update event
+
+    // Log the entire data object to verify its structure and values
+    console.log("Received data object:", data);
+
+    const codeBlock = codeBlocks.find(
+      (block) => block.id === parseInt(data.id)
+    );
+    if (codeBlock) {
+      console.log(`Current code for block ${data.id}: ${codeBlock.code}`);
+      console.log(`Solution for block ${data.id}: ${codeBlock.solution}`);
+    }
+
+    io.emit("code update", data);
+
+    if (
+      parseInt(data.id) === codeBlock.id &&
+      data.code.trim() === codeBlock.solution.trim()
+    ) {
+      io.to(socket.id).emit("code solved", true);
+      console.log(`Code block ${data.id} solved by ${socket.id}`);
+    } else {
+      io.to(socket.id).emit("code solved", false);
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-    if (globalMentorId === socket.id) {
-      console.log(`Mentor disconnected:`, socket.id);
-      globalMentorId = null; // Remove global mentor assignment
+    console.log("Client disconnected");
+    students.delete(socket.id); // Remove from students set
+    if (mentorId === socket.id) {
+      mentorId = null; // Reset mentor ID
+      console.log("Mentor has disconnected");
     }
-    console.log("Current global mentor after disconnect:", globalMentorId);
+  });
+
+  socket.on("request mentor", () => {
+    if (!mentorId && !students.has(socket.id)) {
+      mentorId = socket.id;
+      socket.emit("mentor status", true);
+      console.log(`New mentor assigned: ${mentorId}`);
+    }
   });
 });
 

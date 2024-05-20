@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/styles.css"; // Import the CSS file from the styles folder
 
 const Lobby = () => {
   const navigate = useNavigate();
@@ -17,10 +18,15 @@ const Lobby = () => {
 
   return (
     <div className="container">
-      <h1>Choose code block</h1>
-      <ul>
+      <h1>Welcome to the Online Coding App</h1>
+      <h2>Choose a code block</h2>
+      <ul className="code-block-list">
         {codeBlocks.map((block) => (
-          <li key={block.id} onClick={() => handleClick(block.id)}>
+          <li
+            key={block.id}
+            onClick={() => handleClick(block.id)}
+            className="code-block-item"
+          >
             {block.title}
           </li>
         ))}

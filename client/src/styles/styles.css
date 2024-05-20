@@ -1,48 +1,96 @@
-/* styles.css */
-
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
+  color: #333;
   margin: 0;
   padding: 0;
-}
-
-h1 {
-  color: #333;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .container {
   max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 40px 20px;
   border-radius: 8px;
-  margin-top: 50px;
+  text-align: center;
+  margin: auto;
 }
 
-ul {
+h1,
+h2 {
+  color: #333;
+}
+
+pre,
+textarea {
+  width: 100%;
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: "Courier New", Courier, monospace;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 200px;
+  resize: none;
+}
+
+.smiley-face {
+  font-size: 100px;
+  text-align: center;
+  margin-top: 20px;
+  color: green;
+}
+
+ul.code-block-list {
   list-style-type: none;
   padding: 0;
 }
 
-li {
+li.code-block-item {
+  padding: 15px;
+  margin: 15px 0;
   background-color: #e0e0e0;
-  margin: 10px 0;
-  padding: 10px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-li:hover {
-  background-color: #ccc;
+li.code-block-item:hover {
+  background-color: #d0d0d0;
 }
 
-.loading,
-.error {
-  text-align: center;
-  font-size: 1.2em;
-  color: #333;
+.return-button {
+  padding: 12px 24px;
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.1);
+}
+
+.return-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.return-button:active {
+  background-color: #004085;
+  transform: translateY(0);
 }
