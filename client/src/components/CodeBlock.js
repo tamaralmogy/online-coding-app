@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import hljs from "highlight.js";
 import "highlight.js/styles/default.css";
 
+// optional remove
 const socket = io.connect("http://localhost:4000");
 
 const CodeBlock = () => {
