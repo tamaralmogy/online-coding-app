@@ -37,7 +37,7 @@ Make sure you have the following software installed on your machine:
    cd online-coding-app
    npm install
    npm start
-  ```
+   
 ### Project Structure
 - `public/`: Contains static files and the `index.html`.
 - `src/`: Contains the React components and application logic.
