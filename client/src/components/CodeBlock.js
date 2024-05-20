@@ -5,7 +5,8 @@ import hljs from "highlight.js";
 import "highlight.js/styles/default.css";
 
 // optional remove
-const socket = io.connect("http://localhost:4000");
+// const socket = io.connect("http://localhost:4000");
+const socket = io.connect("https://warm-mesa-50121-a03e03717a65.herokuapp.com");
 
 const CodeBlock = () => {
   const { id } = useParams();
