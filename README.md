@@ -10,7 +10,7 @@ This is an online coding web application designed to facilitate real-time coding
 - Solution checking with visual feedback (e.g., smiley face when the solution is correct)
 - Easy navigation between code blocks and lobby
 - Return to lobby button for easy navigation
-- 
+  
 ## User Roles
 
 ### Mentor and Student Roles
