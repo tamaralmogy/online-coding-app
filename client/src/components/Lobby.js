@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../config"; // Import the API URL
 
 const Lobby = () => {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ const Lobby = () => {
 
   useEffect(() => {
     // Fetch the list of code blocks from the server
-    fetch("/code-blocks")
+    fetch(`${API_URL}/code-blocks`)
       .then((response) => response.json())
       .then((data) => setCodeBlocks(data)); // Set the fetched code blocks to the state
   }, []);

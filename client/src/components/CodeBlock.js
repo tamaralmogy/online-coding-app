@@ -3,10 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import hljs from "highlight.js";
 import "highlight.js/styles/default.css";
 import socket from "./socket";
-
-const apiUrl =
-  process.env.REACT_APP_API_URL ||
-  "https://warm-mesa-50121-a03e03717a65.herokuapp.com";
+import API_URL from "../config"; // Import the API URL
 
 const CodeBlock = () => {
   const { id } = useParams();
@@ -18,7 +15,7 @@ const CodeBlock = () => {
   const [isSolved, setIsSolved] = useState(false);
 
   useEffect(() => {
-    fetch(`${apiUrl}/code-blocks/${id}`)
+    fetch(`${API_URL}/code-blocks/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setCode(data.code);
