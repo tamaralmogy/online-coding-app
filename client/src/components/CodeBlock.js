@@ -8,7 +8,9 @@ import socket from "./socket";
 // No need when using API URL
 // const socket = io.connect("http://localhost:4000");
 // const socket = io.connect("https://warm-mesa-50121-a03e03717a65.herokuapp.com");
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl =
+  process.env.REACT_APP_API_URL ||
+  "https://warm-mesa-50121-a03e03717a65.herokuapp.com";
 
 const CodeBlock = () => {
   const { id } = useParams();
