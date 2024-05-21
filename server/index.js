@@ -47,8 +47,10 @@ app.get("/code-blocks/:id", (req, res) => {
   }
 });
 
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "client/build", "../client/build/index.html")
+  );
 });
 
 io.on("connection", (socket) => {
