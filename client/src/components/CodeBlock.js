@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import io from "socket.io-client";
+// import io from "socket.io-client";
 import hljs from "highlight.js";
 import "highlight.js/styles/default.css";
+import socket from "./socket";
 
-// optional remove
+// No need when using API URL
 // const socket = io.connect("http://localhost:4000");
-const socket = io.connect("https://warm-mesa-50121-a03e03717a65.herokuapp.com");
+// const socket = io.connect("https://warm-mesa-50121-a03e03717a65.herokuapp.com");
 
 const CodeBlock = () => {
   const { id } = useParams();
@@ -19,7 +20,7 @@ const CodeBlock = () => {
 
   useEffect(() => {
     // Fetch the code block data from the server
-    fetch(`/code-blocks/${id}`)
+    fetch(`${apiUrl}/code-blocks/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setCode(data.code);
