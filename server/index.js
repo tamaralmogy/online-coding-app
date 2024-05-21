@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, "../client/.env") });
 
 const app = express();
 const server = http.createServer(app);
@@ -15,8 +16,32 @@ const io = socketIo(server, {
 });
 
 const codeBlocks = [
-  // Your code blocks here
+  {
+    id: 1,
+    title: "Async case",
+    code: 'async function foo() { return "bar"; }',
+  },
+  {
+    id: 2,
+    title: "Promise example",
+    code: 'const promise = new Promise((resolve, reject) => { resolve("done"); });',
+  },
+  {
+    id: 3,
+    title: "Callback function",
+    code: "function callbackExample(callback) { callback(); }",
+  },
+  {
+    id: 4,
+    title: "Fetch API",
+    code: 'fetch("https://api.example.com").then(response => response.json()).then(data => console.log(data));',
+  },
 ];
+
+// Add solution to each code block for validation purposes
+codeBlocks.forEach((block) => {
+  block.solution = `${block.code} thank you ChatGPT!`;
+});
 
 let mentorId = null;
 let students = new Set();
@@ -48,9 +73,7 @@ app.get("/code-blocks/:id", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "client/build", "../client/build/index.html")
-  );
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
 
 io.on("connection", (socket) => {
