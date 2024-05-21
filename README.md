@@ -21,7 +21,7 @@ This is an online coding web application designed to facilitate real-time coding
 - When the mentor leaves, the next user who joins will take the mentor's place.
 
 ## Getting Started
-
+If you are 
 ### Prerequisites
 
 Make sure you have the following software installed on your machine:
@@ -37,8 +37,14 @@ Make sure you have the following software installed on your machine:
    cd online-coding-app
    npm install
    npm start
-   
+### Using the App
+
+If you are using the app via: [Online Coding App](https://warm-mesa-50121-a03e03717a65.herokuapp.com/), open two windows, one for the mentor and one for the student.
+
+If you get the solution correct, a surprise will pop up on the window! 😊
+
 ### Project Structure
+
 - `public/`: Contains static files and the `index.html`.
 - `src/`: Contains the React components and application logic.
   - `components/`: Contains React components like `CodeBlock` and `Lobby`.
@@ -46,6 +52,14 @@ Make sure you have the following software installed on your machine:
   - `index.js`: Entry point for the React application.
 - `server/`: Contains the server-side code.
   - `index.js`: Main server file that sets up the Express server and WebSocket connections.
+
+### Future Enhancements
+
+If I had more time, I would have added:
+- Styles for mentor and student pages.
+- The ability for a couple of students to work simultaneously on different codes.
+- A hint button.
+- A pop-up window for the mentor, letting them know which student solved the question.
 
    
    
